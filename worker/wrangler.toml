@@ -1,0 +1,39 @@
+name = "dropd-api"
+main = "src/index.js"
+compatibility_date = "2024-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ─── Cron trigger ─────────────────────────────────────────────────────────────
+# Runs the domain pipeline every day at 06:00 UTC
+# You can add more schedules e.g. "0 */6 * * *" for every 6 hours
+[triggers]
+# Run every hour — domains drop throughout the day across all registrars
+# Change to "*/30 * * * *" for every 30 min (uses more Worker CPU quota)
+crons = ["0 * * * *"]
+
+# ─── Public env vars (not secret) ─────────────────────────────────────────────
+[vars]
+APP_ENV = "production"
+APP_URL = "https://dropd.pages.dev"   # ← update to your real domain
+
+# Optional: seed domains to score on first run (comma-separated)
+# Replace with real dropping domains once you have a feed set up
+# Seed list used until a real drop feed is connected
+# Replace with real dropping domains or leave blank and set DOMAIN_FEED_URL
+DOMAIN_SEED_LIST = "cryptovault.io,fitstack.com,airecruit.co,greenledger.io,spaceroute.co,nanohealth.io,legalops.co,gymflow.app,solarpilot.com,taxbot.io,edgecompute.dev,rewardstack.com"
+
+# How often to re-score existing domains (hours). Default 1 = every pipeline run
+RESCORE_INTERVAL_HOURS = "1"
+
+# ─── Secrets ──────────────────────────────────────────────────────────────────
+# Set each one via: wrangler secret put <NAME>
+#
+#   wrangler secret put SUPABASE_URL
+#   wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+#   wrangler secret put STRIPE_SECRET_KEY
+#   wrangler secret put STRIPE_WEBHOOK_SECRET
+#   wrangler secret put OPR_API_KEY            (free at openpagerank.com)
+#   wrangler secret put DOMAIN_FEED_URL        (URL returning domains, one per line)
+#   wrangler secret put ADMIN_KEY              (any random string for manual pipeline trigger)
+#   wrangler secret put PRICE_HUNTER_MONTHLY   (Stripe price ID for Hunter plan)
+#   wrangler secret put PRICE_PRO_MONTHLY      (Stripe price ID for Pro plan)

@@ -1,0 +1,16 @@
+{
+  "name": "dropd-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev":    "wrangler dev --port 8787",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.32.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7",
+    "stripe": "^14.18.0"
+  }
+}

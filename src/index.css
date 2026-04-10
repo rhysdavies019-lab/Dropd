@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply bg-bg text-white font-sans antialiased;
+    background-color: #0a0a0b;
+    color: #ffffff;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar       { width: 6px; }
+  ::-webkit-scrollbar-track { background: #111113; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+}
+
+/* ─── Components ──────────────────────────────────────────────────────────── */
+@layer components {
+
+  /* Lime CTA button */
+  .btn-lime {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 bg-lime text-bg font-semibold text-sm rounded-lg
+           transition-all duration-150 hover:bg-lime-dim active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Ghost / outline button */
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 border border-border text-white font-medium text-sm rounded-lg
+           transition-all duration-150 hover:border-subtle hover:bg-surface active:scale-95;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-card border border-border rounded-xl p-5 transition-all duration-200;
+  }
+
+  /* Input */
+  .input {
+    @apply w-full bg-surface border border-border rounded-lg px-3.5 py-2.5 text-sm text-white placeholder:text-muted
+           focus:outline-none focus:border-lime/60 focus:ring-1 focus:ring-lime/20 transition-colors;
+  }
+
+  /* Label */
+  .label {
+    @apply block text-xs font-medium text-muted mb-1.5 uppercase tracking-wider;
+  }
+
+  /* Badge pill */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Shimmer skeleton */
+  .skeleton {
+    @apply rounded-lg;
+    background: linear-gradient(90deg, #1a1a1d 25%, #222225 50%, #1a1a1d 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+/* ─── Domain name blur / reveal ───────────────────────────────────────────── */
+.domain-blurred {
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+  transition: filter 0.6s ease;
+}
+.domain-revealed {
+  filter: blur(0px);
+  transition: filter 0.6s ease;
+}
+
+/* ─── Noise texture overlay (subtle premium feel) ─────────────────────────── */
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ─── Glow effects ────────────────────────────────────────────────────────── */
+.glow-lime {
+  box-shadow: 0 0 24px rgba(200, 241, 53, 0.15);
+}
+.text-glow-lime {
+  text-shadow: 0 0 40px rgba(200, 241, 53, 0.4);
+}
+
+/* ─── Hero gradient ───────────────────────────────────────────────────────── */
+.hero-gradient {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% -10%,
+    rgba(200, 241, 53, 0.08) 0%,
+    transparent 70%
+  );
+}
+
+/* ─── Grid lines background ───────────────────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
