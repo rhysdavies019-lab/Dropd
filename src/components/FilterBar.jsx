@@ -48,10 +48,24 @@ export default function FilterBar({ filters, onChange }) {
         {EXTENSIONS.map(e => <option key={e} value={e}>{e}</option>)}
       </select>
 
+      {/* Drop date filter */}
+      <select
+        value={filters.dropDays}
+        onChange={e => update('dropDays', e.target.value)}
+        className={selectClass}
+      >
+        <option value="">Any drop date</option>
+        <option value="1">Drops today</option>
+        <option value="3">Within 3 days</option>
+        <option value="7">Within 1 week</option>
+        <option value="14">Within 2 weeks</option>
+        <option value="30">Within 30 days</option>
+      </select>
+
       {/* Clear */}
-      {(filters.grade || filters.category || filters.extension) && (
+      {(filters.grade || filters.category || filters.extension || filters.dropDays) && (
         <button
-          onClick={() => onChange({ grade: '', category: '', extension: '' })}
+          onClick={() => onChange({ grade: '', category: '', extension: '', dropDays: '' })}
           className="text-xs text-lime hover:text-lime-dim transition-colors"
         >
           Clear filters

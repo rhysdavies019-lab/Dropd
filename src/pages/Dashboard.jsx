@@ -16,9 +16,9 @@ const HAS_SUPABASE = import.meta.env.VITE_SUPABASE_URL &&
 export default function Dashboard() {
   const { user, plan } = useAuth()
 
-  const [filters,         setFilters]         = useState({ grade: '', category: '', extension: '' })
+  const [filters,         setFilters]         = useState({ grade: '', category: '', extension: '', dropDays: '' })
   const [unlockedIds,     setUnlockedIds]      = useState([])
-  const [domains,         setDomains]          = useState(MOCK_DOMAINS)
+  const [domains,         setDomains]          = useState([])
   const [enriching,       setEnriching]        = useState(false)
   const [enrichProgress,  setEnrichProgress]   = useState(null)
   const [enrichDone,      setEnrichDone]       = useState(false)
@@ -26,6 +26,29 @@ export default function Dashboard() {
   const [lastUpdated,     setLastUpdated]      = useState(new Date())
   const [liveConnected,   setLiveConnected]    = useState(false)
   const channelRef = useRef(null)
+
+  // ── Load domains from Supabase ────────────────────────────────────────────
+  useEffect(() => {
+    if (!HAS_SUPABASE) { setDomains(MOCK_DOMAINS); return }
+    supabase
+      .from('domains')
+      .select('*')
+      .order('score', { ascending: false })
+      .limit(100)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setDomains(data.map(d => ({
+            ...d,
+            nameBlurred: d.name_hashed,
+            estimatedValue: d.estimated_value,
+            createdAt: d.created_at,
+            dropDate: d.drop_date,
+          })))
+        } else {
+          setDomains(MOCK_DOMAINS)
+        }
+      })
+  }, [])
 
   // ── Load unlocked IDs ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -82,6 +105,10 @@ export default function Dashboard() {
       if (filters.grade     && d.grade     !== filters.grade)     return false
       if (filters.category  && d.category  !== filters.category)  return false
       if (filters.extension && d.extension !== filters.extension) return false
+      if (filters.dropDays && d.dropDate) {
+        const daysLeft = (new Date(d.dropDate) - Date.now()) / 86400000
+        if (daysLeft > parseInt(filters.dropDays)) return false
+      }
       return true
     })
   }, [domains, filters])
