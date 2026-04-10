@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Zap, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { signInWithEmail, signUpWithEmail, signInWithGoogle } from '../lib/supabase'
+import { signInWithEmail, signUpWithEmail, resetPassword } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Auth() {
@@ -16,6 +16,7 @@ export default function Auth() {
   const [showPw,  setShowPw]  = useState(false)
   const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
+  const [forgot,  setForgot]  = useState(false)
 
   // Redirect already-logged-in users
   useEffect(() => { if (user) navigate('/dashboard', { replace: true }) }, [user])
@@ -41,10 +42,13 @@ export default function Auth() {
     }
   }
 
-  async function handleGoogle() {
+  async function handleForgot(e) {
+    e.preventDefault()
     setLoading(true)
-    const { error: err } = await signInWithGoogle()
-    if (err) { setError(err.message); setLoading(false) }
+    const { error: err } = await resetPassword(email)
+    setLoading(false)
+    if (err) setError(err.message)
+    else setError('✅ Check your email for a password reset link.')
   }
 
   const isSuccess = error.startsWith('✅')
@@ -79,8 +83,26 @@ export default function Auth() {
             ))}
           </div>
 
+          {/* Forgot password form */}
+          {forgot ? (
+            <form onSubmit={handleForgot} className="space-y-4">
+              <div>
+                <label className="label">Your email</label>
+                <div className="relative">
+                  <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+                  <input type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required className="input pl-9" />
+                </div>
+              </div>
+              {error && <p className={`text-xs p-3 rounded-lg border ${isSuccess ? 'border-lime/30 bg-lime/10 text-lime' : 'border-red-500/30 bg-red-500/10 text-red-400'}`}>{error}</p>}
+              <button type="submit" disabled={loading} className="btn-lime w-full justify-center">
+                {loading ? 'Sending…' : 'Send reset link'}
+              </button>
+              <button type="button" onClick={() => { setForgot(false); setError('') }} className="w-full text-xs text-muted hover:text-white transition-colors text-center">← Back to login</button>
+            </form>
+          ) : null}
+
           {/* Email / password form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {!forgot && <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="label">Email</label>
               <div className="relative">
@@ -129,6 +151,12 @@ export default function Auth() {
               </div>
             )}
 
+            {tab === 'login' && (
+              <button type="button" onClick={() => { setForgot(true); setError('') }} className="w-full text-xs text-muted hover:text-white transition-colors text-center -mt-2">
+                Forgot password?
+              </button>
+            )}
+
             <button type="submit" disabled={loading} className="btn-lime w-full justify-center">
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -139,7 +167,7 @@ export default function Auth() {
                 tab === 'login' ? 'Sign in' : 'Create account'
               )}
             </button>
-          </form>
+          </form>}
         </motion.div>
 
         <p className="text-center text-xs text-muted mt-6">
