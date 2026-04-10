@@ -82,6 +82,9 @@ export default function DomainCard({ domain, onUnlock, unlockedIds = [] }) {
           </div>
         </div>
 
+        {/* ── Drop countdown ── */}
+        {domain.dropDate && <DropBadge dropDate={domain.dropDate} />}
+
         {/* ── Stats row ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
           <Stat icon={<TrendingUp size={12} />} label="Est. profit" value={`£${Math.max(0, domain.estimatedValue - 10).toLocaleString()}`} highlight />
@@ -153,6 +156,23 @@ export default function DomainCard({ domain, onUnlock, unlockedIds = [] }) {
         <AutoBuyModal domain={domain} onClose={() => setShowAutoBuy(false)} />
       )}
     </>
+  )
+}
+
+// Drop countdown badge
+function DropBadge({ dropDate }) {
+  const days = Math.ceil((new Date(dropDate) - Date.now()) / 86400000)
+  const isToday = days <= 0
+  const isSoon  = days <= 2
+  return (
+    <div className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg mb-3 w-fit ${
+      isToday ? 'bg-red-500/15 text-red-400 border border-red-500/30' :
+      isSoon  ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' :
+               'bg-surface text-muted border border-border'
+    }`}>
+      <Clock size={11} />
+      {isToday ? '🔴 Drops today!' : isSoon ? `⚡ Drops in ${days}d` : `Drops in ${days} days`}
+    </div>
   )
 }
 
